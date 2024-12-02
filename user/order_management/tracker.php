@@ -125,7 +125,8 @@ WHERE o.order_status = 'delivered' AND o.users_id = :userId";
       </a>
 
       <!-- Navbar Brand Name Centered -->
-      <a class="navbar-brand  mx-auto dm-serif-display letter-spacing-1 text-dark" href="../../user/user_auth/index.php">
+      <a class="navbar-brand  mx-auto dm-serif-display letter-spacing-1 text-dark"
+        href="../../user/user_auth/index.php">
         <img src="../../assets/image/logo.png" alt="Interllux Logo" width="30" height="24">
         Interllux
       </a>
@@ -149,11 +150,14 @@ WHERE o.order_status = 'delivered' AND o.users_id = :userId";
       <ul class="list-unstyled">
         <li><a href="../../user/user_auth/index.php" class="text-dark text-decoration-none letter-spacing-1">Home</a>
         </li>
-        <li><a href="../../user/product_catalog/product_catalog.php" class="text-dark text-decoration-none letter-spacing-1">Products</a></li>
-        <li><a href="../../user/order_management/review.php" class="text-dark text-decoration-none letter-spacing-1">Customer Reviews</a></li>
+        <li><a href="../../user/product_catalog/product_catalog.php"
+            class="text-dark text-decoration-none letter-spacing-1">Products</a></li>
+        <li><a href="../../user/order_management/review.php"
+            class="text-dark text-decoration-none letter-spacing-1">Customer Reviews</a></li>
         <li><a href="../../user/order_management/order.php" class="text-dark text-decoration-none letter-spacing-1">My
             Orders</a></li>
-        <li><a href="../../user/user_auth/contact-us.php" class="text-dark text-decoration-none letter-spacing-1">Contact Us</a></li>
+        <li><a href="../../user/user_auth/contact-us.php"
+            class="text-dark text-decoration-none letter-spacing-1">Contact Us</a></li>
         <li><a href="../../user/user_auth/about-us.php" class="text-dark text-decoration-none letter-spacing-1">About
             Us</a></li>
       </ul>
@@ -182,7 +186,8 @@ WHERE o.order_status = 'delivered' AND o.users_id = :userId";
           <a href="#" class="remove-item text-black">Remove</a>
         </div>
       </div>
-      <button id="checkout-button"><a href="../../user/checkout_payment/payment.php" class="checkout">Checkout • <p class="text-center fw-normal m-0" id="total">₱2,900,000.00</p></a></button>
+      <button id="checkout-button"><a href="../../user/checkout_payment/payment.php" class="checkout">Checkout • <p
+            class="text-center fw-normal m-0" id="total">₱2,900,000.00</p></a></button>
     </div>
   </div>
   <!-- END NAVBAR -->
@@ -192,7 +197,7 @@ WHERE o.order_status = 'delivered' AND o.users_id = :userId";
       <div class="col">
         <button type="button" class="nav-item btn position-relative p-1 border-0" data-target="to-pay">
           To Pay
-          <?php if ($toPayCount > 0) : ?>
+          <?php if ($toPayCount > 0): ?>
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
               <?php echo $toPayCount; ?>
               <span class="visually-hidden">unread messages</span>
@@ -204,7 +209,7 @@ WHERE o.order_status = 'delivered' AND o.users_id = :userId";
       <div class="col">
         <button type="button" class="nav-item btn position-relative p-1 border-0" data-target="to-ship">
           To Ship
-          <?php if ($toShipCount > 0) : ?>
+          <?php if ($toShipCount > 0): ?>
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
               <?php echo $toShipCount; ?>
               <span class="visually-hidden">unread messages</span>
@@ -215,7 +220,7 @@ WHERE o.order_status = 'delivered' AND o.users_id = :userId";
       <div class="col">
         <button type="button" class="nav-item btn position-relative p-1 border-0" data-target="shipped">
           Shipped
-          <?php if ($shippedCount > 0) : ?>
+          <?php if ($shippedCount > 0): ?>
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
               <?php echo $shippedCount; ?>
               <span class="visually-hidden">unread messages</span>
@@ -227,7 +232,7 @@ WHERE o.order_status = 'delivered' AND o.users_id = :userId";
       <div class="col">
         <button type="button" class="nav-item btn position-relative p-1 border-0" data-target="to-rate">
           To Review
-          <?php if ($toRateCount > 0) : ?>
+          <?php if ($toRateCount > 0): ?>
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
               <?php echo $toRateCount; ?>
               <span class="visually-hidden">unread messages</span>
@@ -312,14 +317,14 @@ WHERE o.order_status = 'delivered' AND o.users_id = :userId";
         JOIN orders_item oi ON o.orders_id = oi.orders_id
         JOIN product p ON oi.product_id = p.product_id
         WHERE o.order_status = 'completed' AND o.users_id = :userId"; // Removed LIMIT 1 to fetch all relevant completed orders
-
-        $stmt = $pdo->prepare($sql); // Corrected: Use prepare instead of query
-        $stmt->execute(['userId' => $userId]); // Corrected: Execute with bound parameter
-        $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  
+    $stmt = $pdo->prepare($sql); // Corrected: Use prepare instead of query
+    $stmt->execute(['userId' => $userId]); // Corrected: Execute with bound parameter
+    $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Check if there are any completed orders
     if (empty($orders)) {
-      
+
     } else {
       foreach ($orders as $order) {
         echo '<div id="to-ship" class="tab-content container mt-3">
@@ -368,10 +373,10 @@ WHERE o.order_status = 'delivered' AND o.users_id = :userId";
         JOIN orders_item oi ON o.orders_id = oi.orders_id
         JOIN product p ON oi.product_id = p.product_id
         WHERE o.order_status = 'shipped' AND o.users_id = :userId"; // Removed LIMIT 1 to fetch all relevant shipped orders
-
-        $stmt = $pdo->prepare($sql); // Corrected: Use prepare instead of query
-        $stmt->execute(['userId' => $userId]); // Corrected: Execute with bound parameter
-        $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  
+    $stmt = $pdo->prepare($sql); // Corrected: Use prepare instead of query
+    $stmt->execute(['userId' => $userId]); // Corrected: Execute with bound parameter
+    $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Check if there are any shipped orders
     if (empty($orders)) {
@@ -421,10 +426,10 @@ WHERE o.order_status = 'delivered' AND o.users_id = :userId";
         JOIN orders_item oi ON o.orders_id = oi.orders_id
         JOIN product p ON oi.product_id = p.product_id
         WHERE o.order_status = 'delivered' AND o.users_id = :userId"; // Removed LIMIT 1 to fetch all relevant delivered orders
-
-        $stmt = $pdo->prepare($sql); // Corrected: Use prepare instead of query
-        $stmt->execute(['userId' => $userId]); // Corrected: Execute with bound parameter
-        $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  
+    $stmt = $pdo->prepare($sql); // Corrected: Use prepare instead of query
+    $stmt->execute(['userId' => $userId]); // Corrected: Execute with bound parameter
+    $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Check if there are any delivered orders to rate
     if (empty($orders)) {
@@ -464,7 +469,7 @@ WHERE o.order_status = 'delivered' AND o.users_id = :userId";
   <script src="../../assets/js/tracker.js"></script>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
       // Get URL parameters
       const urlParams = new URLSearchParams(window.location.search);
       const tab = urlParams.get("tab"); // Read the "tab" parameter
@@ -490,7 +495,7 @@ WHERE o.order_status = 'delivered' AND o.users_id = :userId";
 
       // Add click event listener to all nav items
       document.querySelectorAll(".nav-item").forEach(button => {
-        button.addEventListener("click", function() {
+        button.addEventListener("click", function () {
           const targetTab = this.getAttribute("data-target");
           activateTab(targetTab);
         });
