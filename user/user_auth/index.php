@@ -2,31 +2,31 @@
 include('../../database/dbconnect.php');
 
 try {
-  // Count total reviews
+  // Total reviews count
   $sql_total_reviews = "SELECT COUNT(*) AS total_reviews FROM reviews";
   $stmt_total_reviews = $pdo->query($sql_total_reviews);
-  $total_reviews = $stmt_total_reviews->fetchColumn(); // Fetch the total count directly
+  $total_reviews = $stmt_total_reviews->fetchColumn();
 
-  // Fetch the latest 5 reviews with associated data
+  // Latest reviews query
   $query = "SELECT r.date_created,
-                r.comment,
-                u.user_firstname AS customer_name,
-                p.name AS product_name,
-                img.img_path AS product_image
-        FROM reviews r
-        INNER JOIN users u ON r.users_id = u.id
-        INNER JOIN orders o ON r.orders_id = o.orders_id
-        INNER JOIN orders_item oi ON o.orders_id = oi.orders_id
-        INNER JOIN product p ON oi.product_id = p.product_id
-        INNER JOIN LATERAL (
-            SELECT img_path 
-            FROM img
-            WHERE product_id = p.product_id 
-            ORDER BY img_id ASC 
-            LIMIT 1 OFFSET 1 -- Get the 2nd image
-        ) img ON TRUE
-        ORDER BY r.date_created DESC
-        LIMIT 5";
+                   r.comment,
+                   u.user_firstname AS customer_name,
+                   p.name AS product_name,
+                   img.img_path AS product_image
+            FROM reviews r
+            INNER JOIN users u ON r.users_id = u.id
+            INNER JOIN orders o ON r.orders_id = o.orders_id
+            INNER JOIN orders_item oi ON o.orders_id = oi.orders_id
+            INNER JOIN product p ON oi.product_id = p.product_id
+            INNER JOIN LATERAL (
+                SELECT img_path 
+                FROM img
+                WHERE product_id = p.product_id 
+                ORDER BY img_id ASC 
+                LIMIT 1 OFFSET 1
+            ) img ON TRUE
+            ORDER BY r.date_created DESC
+            LIMIT 5";
 
   $stmt = $pdo->query($query);
   $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
