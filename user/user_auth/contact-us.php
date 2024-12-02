@@ -12,9 +12,9 @@
 
 <body>
 
-    <div id="navbar">
-        <script src="../../assets/js/navbar.js"></script>
-    </div>
+    <?php
+    include '../../user/component/navbar.php';
+    ?>
 
     <!-- Contact Us Section -->
     <section class="container my-5 pt-5">

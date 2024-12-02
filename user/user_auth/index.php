@@ -1,14 +1,14 @@
 <?php
-include ('../../database/dbconnect.php');
+include('../../database/dbconnect.php');
 
 try {
-    // Count total reviews
-    $sql_total_reviews = "SELECT COUNT(*) AS total_reviews FROM reviews";
-    $stmt_total_reviews = $pdo->query($sql_total_reviews);
-    $total_reviews = $stmt_total_reviews->fetchColumn(); // Fetch the total count directly
+  // Count total reviews
+  $sql_total_reviews = "SELECT COUNT(*) AS total_reviews FROM reviews";
+  $stmt_total_reviews = $pdo->query($sql_total_reviews);
+  $total_reviews = $stmt_total_reviews->fetchColumn(); // Fetch the total count directly
 
-    // Fetch the latest 5 reviews with associated data
-    $query = "SELECT r.date_created,
+  // Fetch the latest 5 reviews with associated data
+  $query = "SELECT r.date_created,
                 r.comment,
                 u.user_firstname AS customer_name,
                 p.name AS product_name,
@@ -28,11 +28,11 @@ try {
         ORDER BY r.date_created DESC
         LIMIT 5";
 
-$stmt = $pdo->query($query);
-$reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  $stmt = $pdo->query($query);
+  $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
-    exit;
+  echo "Error: " . $e->getMessage();
+  exit;
 }
 ?>
 
@@ -53,9 +53,9 @@ $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 
 <body>
-  <div id="navbar">
-    <script src="../../assets/js/navbar.js"></script>
-  </div>
+  <?php
+  include '../../user/component/navbar.php';
+  ?>
 
   <!-- ######### LANDING PAGE SECTION ########-->
   <div class="container-fluid background-image">
@@ -80,20 +80,20 @@ $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <!-- Horizontal Scrollable Cards -->
     <div class="scroll-container">
-    <?php foreach ($reviews as $review): ?>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="card">
-                        <img src="<?= htmlspecialchars($review['product_image']) ?>" class="card-img-top" alt="<?= htmlspecialchars($review['product_name']) ?>">
-                        <div class="card-body text-center">
-                            <h5 class="card-title mt-2"><?= htmlspecialchars($review['customer_name']) ?></h5>
-                            <p class="fw-bold"><?= htmlspecialchars($review['product_name']) ?></p>
-                            <p class="card-text"><?= htmlspecialchars($review['comment']) ?></p>
-                            <p class="card-text"><strong>Date: </strong> <?= htmlspecialchars($review['date_created']) ?></p>
-                        </div>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-</div>
+      <?php foreach ($reviews as $review) : ?>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="card">
+            <img src="<?= htmlspecialchars($review['product_image']) ?>" class="card-img-top" alt="<?= htmlspecialchars($review['product_name']) ?>">
+            <div class="card-body text-center">
+              <h5 class="card-title mt-2"><?= htmlspecialchars($review['customer_name']) ?></h5>
+              <p class="fw-bold"><?= htmlspecialchars($review['product_name']) ?></p>
+              <p class="card-text"><?= htmlspecialchars($review['comment']) ?></p>
+              <p class="card-text"><strong>Date: </strong> <?= htmlspecialchars($review['date_created']) ?></p>
+            </div>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div>
 
     <!-- READ MORE REVIEWS BUTTON -->
     <div class="text-center mt-3">
@@ -106,9 +106,9 @@ $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <!-- YOU MAY ALSO LIKE CONTAINER -->
 
 
-  <div id="catalog">
-    <script src="../../assets/js/recommendation.js"></script>
-  </div>
+  <?php
+  include '../../user/order_management/recommendation.php';
+  ?>
 
   <div id="footer">
     <script src="../../assets/js/footer.js"></script>

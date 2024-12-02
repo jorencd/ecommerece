@@ -2,9 +2,9 @@
 include '../../database/dbconnect.php';  // Ensure correct path to DB connection
 
 // Fetch sorting filter from request
-$sort_order = $_GET['sort_order'] ?? 'ASC'; 
+$sort_order = $_GET['sort_order'] ?? 'ASC';
 if (!in_array($sort_order, ['ASC', 'DESC'])) {
-    $sort_order = 'ASC';
+  $sort_order = 'ASC';
 }
 
 // Prepare and execute product query
@@ -36,6 +36,7 @@ $brands = $brandStmt->fetchAll(PDO::FETCH_ASSOC);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -66,72 +67,61 @@ $brands = $brandStmt->fetchAll(PDO::FETCH_ASSOC);
     .product-card:hover {
       cursor: pointer;
     }
-
-    .sorting-bar {
-    position: sticky;
-    top: 60px; /* Adjust to match your header's height */
-    z-index: 1000; /* Ensure it's above other elements */
-    background-color: #f8f9fa; /* Ensure it's always visible with a background */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Slight shadow for separation */
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
-}
-
   </style>
 </head>
 
 <body>
-<div id="navbar">
-    <script src="../../assets/js/navbar.js"></script>
-  </div>
+  <?php
+  include '../../user/component/navbar.php';
+  ?>
 
-  <div class="container-fluid mt-4">
+  <div class="container-fluid mt-3">
     <!-- Sorting -->
     <div class="row sorting-bar pb-2 pt-3">
       <div class="col-12 d-flex justify-content-center gap-2">
         <!-- Sort By Dropdown -->
-        <select id="sortOptions" class="form-select w-auto rounded-0 shadow-none border-black" aria-label="Sort By">
+        <select id="sortOptions" class="form-select w-auto rounded-0 shadow-none border-black mt-5 " aria-label="Sort By">
           <option value="default" selected>Sort By</option>
           <option value="price-asc">Price: Low to High</option>
           <option value="price-desc">Price: High to Low</option>
         </select>
 
         <!-- Filter by Brand Dropdown -->
-        <select id="brandFilter" class="form-select w-auto rounded-0 shadow-none border-black" aria-label="Filter by Brand">
+        <select id="brandFilter" class="form-select w-auto rounded-0 shadow-none border-black mt-5" aria-label="Filter by Brand">
           <option value="all" selected>All Brands</option>
-          <?php foreach ($brands as $brand): ?>
+          <?php foreach ($brands as $brand) : ?>
             <option value="<?= htmlspecialchars($brand['brand']) ?>"><?= htmlspecialchars($brand['brand']) ?></option>
           <?php endforeach; ?>
         </select>
       </div>
     </div>
-</div>
+  </div>
 
 
-<div id="product-list" class="row px-3">
-  <?php if (!empty($products)): ?>
-    <?php foreach ($products as $product): ?>
-      <div class="col-6 col-md-3 product-card" data-brand="<?= htmlspecialchars($product['brand']) ?>">
-        <div class="card mb-3 rounded-2">
-          <a href="product_details.php?product_id=<?= htmlspecialchars($product['product_id']) ?>" class="card-link nav-link text-dark">
-            <img src="<?= htmlspecialchars($product['img_path']) ?>" class="card-img-top" alt="<?= htmlspecialchars($product['name']) ?>">
-            <div class="card-body">
-              <h5 class="card-title" style="font-size: 14px;"><?= htmlspecialchars($product['name']) ?></h5>
-              <p class="card-text"><?= htmlspecialchars($product['overview']) ?></p>
-              <p class="fw-semibold m-1">₱<?= number_format($product['price'], 2) ?></p>
-            </div>
-          </a>
-          <button class="btn btn-dark mt-3" style="border-top-left-radius: 0; border-top-right-radius: 0;">Add to Cart</button>
+  <div id="product-list" class="row px-3">
+    <?php if (!empty($products)) : ?>
+      <?php foreach ($products as $product) : ?>
+        <div class="col-6 col-md-3 product-card" data-brand="<?= htmlspecialchars($product['brand']) ?>">
+          <div class="card mb-3 rounded-2">
+            <a href="product_details.php?product_id=<?= htmlspecialchars($product['product_id']) ?>" class="card-link nav-link text-dark">
+              <img src="<?= htmlspecialchars($product['img_path']) ?>" class="card-img-top" alt="<?= htmlspecialchars($product['name']) ?>">
+              <div class="card-body">
+                <h5 class="card-title" style="font-size: 14px;"><?= htmlspecialchars($product['name']) ?></h5>
+                <p class="card-text"><?= htmlspecialchars($product['overview']) ?></p>
+                <p class="fw-semibold m-1">₱<?= number_format($product['price'], 2) ?></p>
+              </div>
+            </a>
+            <button class="btn btn-dark mt-3" style="border-top-left-radius: 0; border-top-right-radius: 0;">Add to Cart</button>
           </div>
-      </div>
-    <?php endforeach; ?>
-  <?php else: ?>
-    <p class="col-12 text-center">No products found.</p>
-  <?php endif; ?>
-</div>
+        </div>
+      <?php endforeach; ?>
+    <?php else : ?>
+      <p class="col-12 text-center">No products found.</p>
+    <?php endif; ?>
+  </div>
 
-      <!-- See More Button: Only show if more than 8 products -->
-  <?php if (count($products) > 8): ?>
+  <!-- See More Button: Only show if more than 8 products -->
+  <?php if (count($products) > 8) : ?>
     <div class="text-center mt-3">
       <button id="seeMoreButton" class="btn btn-dark">See More</button>
     </div>
@@ -143,28 +133,28 @@ $brands = $brandStmt->fetchAll(PDO::FETCH_ASSOC);
 
   <script src="../../assets/Bootstrap/js/bootstrap.bundle.js"></script>
   <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const productCards = Array.from(document.querySelectorAll(".product-card"));
-    const sortOptions = document.getElementById("sortOptions");
-    const brandFilter = document.getElementById("brandFilter");
-    const productList = document.getElementById("product-list");
-    const seeMoreButton = document.getElementById("seeMoreButton");
+    document.addEventListener("DOMContentLoaded", function() {
+      const productCards = Array.from(document.querySelectorAll(".product-card"));
+      const sortOptions = document.getElementById("sortOptions");
+      const brandFilter = document.getElementById("brandFilter");
+      const productList = document.getElementById("product-list");
+      const seeMoreButton = document.getElementById("seeMoreButton");
 
-    let isExpanded = false;
+      let isExpanded = false;
 
-    // Sorting Functionality
-    sortOptions.addEventListener("change", function () {
+      // Sorting Functionality
+      sortOptions.addEventListener("change", function() {
         let sortedCards;
 
         switch (sortOptions.value) {
-            case "price-asc":
-                sortedCards = productCards.sort((a, b) => getPrice(a) - getPrice(b));
-                break;
-            case "price-desc":
-                sortedCards = productCards.sort((a, b) => getPrice(b) - getPrice(a));
-                break;
-            default:
-                sortedCards = productCards; // Default order
+          case "price-asc":
+            sortedCards = productCards.sort((a, b) => getPrice(a) - getPrice(b));
+            break;
+          case "price-desc":
+            sortedCards = productCards.sort((a, b) => getPrice(b) - getPrice(a));
+            break;
+          default:
+            sortedCards = productCards; // Default order
         }
 
         // Clear product list and re-append sorted cards
@@ -173,51 +163,50 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Update visibility (for See More functionality)
         updateProductVisibility();
-    });
+      });
 
-    // Brand Filtering Functionality
-    brandFilter.addEventListener("change", function () {
+      // Brand Filtering Functionality
+      brandFilter.addEventListener("change", function() {
         const selectedBrand = brandFilter.value;
 
         productCards.forEach(card => {
-            const brand = card.getAttribute("data-brand");
-            card.style.display = (selectedBrand === "all" || brand === selectedBrand) ? "block" : "none";
+          const brand = card.getAttribute("data-brand");
+          card.style.display = (selectedBrand === "all" || brand === selectedBrand) ? "block" : "none";
         });
-    });
+      });
 
-    // Helper function to extract price
-    function getPrice(card) {
+      // Helper function to extract price
+      function getPrice(card) {
         const priceText = card.querySelector(".fw-semibold").innerText.replace(/[₱,]/g, "");
         return parseFloat(priceText);
-    }
+      }
 
-    // Show/Hide Cards on See More Button Click
-    function updateProductVisibility() {
+      // Show/Hide Cards on See More Button Click
+      function updateProductVisibility() {
         const itemsToShow = window.innerWidth >= 768 ? 8 : 4; // Adjust for screen size
         productCards.forEach((card, index) => {
-            if (isExpanded || index < itemsToShow) {
-                card.style.display = "block";
-            } else {
-                card.style.display = "none";
-            }
+          if (isExpanded || index < itemsToShow) {
+            card.style.display = "block";
+          } else {
+            card.style.display = "none";
+          }
         });
-    }
+      }
 
-    // Initial visibility setup
-    updateProductVisibility();
+      // Initial visibility setup
+      updateProductVisibility();
 
-    // Handle window resize for responsive behavior
-    window.addEventListener("resize", updateProductVisibility);
+      // Handle window resize for responsive behavior
+      window.addEventListener("resize", updateProductVisibility);
 
-    // Toggle visibility when "See More" is clicked
-    seeMoreButton.addEventListener("click", () => {
+      // Toggle visibility when "See More" is clicked
+      seeMoreButton.addEventListener("click", () => {
         isExpanded = !isExpanded;
         seeMoreButton.textContent = isExpanded ? "See Less" : "See More";
         updateProductVisibility();
+      });
     });
-});
-
-
   </script>
 </body>
+
 </html>

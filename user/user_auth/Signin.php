@@ -17,7 +17,7 @@ if (isset($_POST['signIn'])) {
     $password = $_POST['password'];
 
     // Query to check if the email and password match in the users table
-    $stmt = $pdo->prepare("SELECT * FROM user_test WHERE email = :email AND password = :password");
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email AND password = :password");
     $stmt->execute(['email' => $email, 'password' => $password]);
     $user = $stmt->fetch();
 
@@ -30,7 +30,9 @@ if (isset($_POST['signIn'])) {
         exit();  // Ensure no further code is executed after redirection
     } else {
         // Either email or password is incorrect
-        echo "Invalid email or password.";
+        echo  "<script>
+        alert('Invalid email or password');
+        window.location.href = 'loginpage.php';
+      </script>";
     }
 }
-?>

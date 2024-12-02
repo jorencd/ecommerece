@@ -27,7 +27,7 @@ $stmt = $pdo->prepare($query);
 $stmt->execute(['product_id' => $product_id]);
 $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if ($product):
+if ($product) :
     $thumbnails = explode(',', $product['thumbnails']); // Split thumbnails into an array
 ?>
 
@@ -127,7 +127,7 @@ if ($product):
 
                 <!-- Thumbnails for additional images -->
                 <div class="thumbnail-container d-flex justify-content-center gap-3 mt-3">
-                    <?php foreach ($thumbnails as $thumbnail): ?>
+                    <?php foreach ($thumbnails as $thumbnail) : ?>
                         <img src="<?= htmlspecialchars($thumbnail) ?>" alt="Thumbnail" class="thumbnail img-thumbnail" onclick="changeMainImage('<?= htmlspecialchars($thumbnail) ?>')">
                     <?php endforeach; ?>
                 </div>
@@ -160,14 +160,14 @@ if ($product):
                 </div>
             </div>
         </div>
-    <?php else: ?>
+    <?php else : ?>
         <p class="text-center">Product not found.</p>
     <?php endif; ?>
 
 
-    <div id="catalog">
-        <script src="../../assets/js/recommendation.js"></script>
-    </div>
+    <?php
+    include '../../user/order_management/recommendation.php';
+    ?>
 
     <div id="footer">
         <script src="../../assets/js/footer.js"></script>

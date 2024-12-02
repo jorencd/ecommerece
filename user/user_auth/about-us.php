@@ -69,9 +69,9 @@
 
 <body>
     <!-- NAVBAR -->
-     <div id="navbar">
-        <script src="../../assets/js/navbar.js"></script>
-     </div>
+    <?php
+    include '../../user/component/navbar.php';
+    ?>
     <!-- END NAVBAR -->
 
     <!-- ABOUT US SECTION -->
@@ -123,7 +123,7 @@
         <script src="../../assets/js/footer.js"></script>
     </div>
     <!-- BOOTSTRAP JS and dependencies -->
-  <script src="../../assets/Bootstrap/js/bootstrap.bundle.js"></script>
+    <script src="../../assets/Bootstrap/js/bootstrap.bundle.js"></script>
 </body>
 
 </html>

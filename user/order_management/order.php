@@ -25,9 +25,9 @@
 
 <body>
 
-  <div id="navbar">
-    <script src="../../assets/js/navbar.js"></script>
-  </div>
+<?php
+  include '../../user/component/navbar.php';
+  ?>
 
   <div class="profile-container container-fluid py-5 mt-5 text-dark" style="height: 200px;">
     <h5>Hi! Jorence</h5>
@@ -136,9 +136,9 @@
 
 
   <!-- PRODUCT CATALOG -->
-  <div id="catalog">
-    <script src="../../assets/js/recommendation.js"></script>
-  </div>
+  <?php
+  include '../../user/order_management/recommendation.php';
+  ?>
 
   <!-- FOOTER -->
   <div id="footer">
