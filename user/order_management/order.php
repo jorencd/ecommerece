@@ -1,3 +1,49 @@
+<?php
+include '../../database/dbconnect.php';
+session_start();
+
+$first_name = "Guest"; // Default to 'Guest'
+$order_counts = [
+  'pending' => 0,
+  'processing' => 0,
+  'shipped' => 0,
+  'delivered' => 0,
+  'completed' => 0,
+  'cancelled' => 0,
+  'return/refund' => 0,
+];
+
+if (isset($_SESSION['id'])) {
+  try {
+    // Get user's first name
+    $stmt = $pdo->prepare("SELECT user_firstname FROM users WHERE id = :id");
+    $stmt->execute(['id' => $_SESSION['id']]);
+    $user = $stmt->fetch();
+
+    if ($user && !empty($user['user_firstname'])) {
+      $first_name = $user['user_firstname'];
+    }
+
+    // Get the counts of orders based on user id and order status
+    $stmt = $pdo->prepare("
+            SELECT order_status, COUNT(oi.orders_item_id) AS order_count
+            FROM orders o
+            JOIN orders_item oi ON o.orders_id = oi.orders_id
+            WHERE o.users_id = :user_id
+            GROUP BY order_status
+        ");
+    $stmt->execute(['user_id' => $_SESSION['id']]);
+
+    // Fetch and store counts for each order status
+    while ($row = $stmt->fetch()) {
+      $order_counts[$row['order_status']] = $row['order_count'];
+    }
+  } catch (PDOException $e) {
+    error_log("Database error: " . $e->getMessage());
+  }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -25,16 +71,15 @@
 
 <body>
 
-<?php
+  <?php
   include '../../user/component/navbar.php';
   ?>
 
-  <div class="profile-container container-fluid py-5 mt-5 text-dark" style="height: 200px;">
-    <h5>Hi! Jorence</h5>
+  <div class="profile-container container-fluid py-5 mt-3 text-dark" style="height: 200px;">
+    <h5>Hello! <?php echo htmlspecialchars($first_name); ?></h5>
   </div>
-
   <!-- ORDER TRACKER BUTTONS -->
-  <div class="container mt-3 pb-5 ">
+  <div class="container mt-3 pb-5">
     <h5 class="mb-3">Your Orders</h5>
     <div class="row text-center">
       <!-- TO PAY -->
@@ -42,9 +87,10 @@
         <a class="text-dark" href="tracker.php?tab=to-pay">
           <button type="button" class="tracker-btn btn btn-sm position-relative p-0 px-2">
             <i class="bi bi-credit-card fs-1"></i><br>To Pay
-            <span class="position-absolute top-0 start-100 translate-middle  ps- pe-3 badge rounded-pill bg-dark">
-              1
-              <span class="visually-hidden">unread messages</span>
+            <span class="position-absolute top-0 start-100 translate-middle pe-3 badge rounded-pill bg-dark 
+                        <?php echo ($order_counts['pending'] == 0) ? 'd-none' : ''; ?>">
+              <?php echo $order_counts['pending']; ?>
+            </span>
           </button>
         </a>
       </div>
@@ -53,9 +99,10 @@
         <a class="text-dark" href="tracker.php?tab=to-ship">
           <button type="button" class="tracker-btn btn btn-sm position-relative p-0 px-2">
             <i class="bi bi-box fs-1"></i><br>To Ship
-            <span class="position-absolute top-0 start-100 translate-middle  ps- pe-3 badge rounded-pill bg-dark">
-              1
-              <span class="visually-hidden">unread messages</span>
+            <span class="position-absolute top-0 start-100 translate-middle pe-3 badge rounded-pill bg-dark 
+                        <?php echo ($order_counts['processing'] == 0) ? 'd-none' : ''; ?>">
+              <?php echo $order_counts['processing']; ?>
+            </span>
           </button>
         </a>
       </div>
@@ -64,37 +111,39 @@
         <a class="text-dark" href="tracker.php?tab=shipped">
           <button type="button" class="tracker-btn btn btn-sm position-relative p-0 px-2">
             <i class="bi bi-truck fs-1"></i><br>Shipped
-            <span class="position-absolute top-0 start-100 translate-middle  ps- pe-3 badge rounded-pill bg-dark">
-              1
-              <span class="visually-hidden">unread messages</span>
+            <span class="position-absolute top-0 start-100 translate-middle pe-3 badge rounded-pill bg-dark 
+                        <?php echo ($order_counts['shipped'] == 0) ? 'd-none' : ''; ?>">
+              <?php echo $order_counts['shipped']; ?>
+            </span>
           </button>
         </a>
       </div>
-      <!-- DELIVERED -->
+      <!-- rate -->
       <div class="col p-0">
-        <a class="text-dark" href="delivered.php">
+        <a class="text-dark" href="tracker.php?tab=to-rate">
           <button type="button" class="tracker-btn btn btn-sm position-relative p-0 px-2">
-            <i class="bi bi-check2-square fs-1"></i><br>Delivered
-            <span class="position-absolute top-0 start-100 translate-middle  ps- pe-3 badge rounded-pill bg-dark">
-              1
-              <span class="visually-hidden">unread messages</span>
+            <i class="bi-star fs-1"></i><br>Shipped
+            <span class="position-absolute top-0 start-100 translate-middle pe-3 badge rounded-pill bg-dark 
+                        <?php echo ($order_counts['delivered'] == 0) ? 'd-none' : ''; ?>">
+              <?php echo $order_counts['delivered']; ?>
+            </span>
           </button>
         </a>
       </div>
+
     </div>
   </div>
   <!-- CANCELED ORDERS AND RETURN REFUND ORDERS -->
   <div class="container mt-3 pb-5 border-2 border-bottom">
     <div class="row text-center">
-
-      <!-- TO RATE -->
       <div class="col p-0">
-        <a class="text-dark" href="tracker.php?tab=to-rate">
+        <a class="text-dark" href="delivered.php">
           <button type="button" class="tracker-btn btn btn-sm position-relative p-0 px-2">
-            <i class="bi bi-star fs-1"></i><br>Review
-            <span class="position-absolute top-0 start-100 translate-middle  ps- pe-3 badge rounded-pill bg-dark">
-              1
-              <span class="visually-hidden">unread messages</span>
+            <i class="bi bi-check2-square fs-1"></i><br>Delivered
+            <span class="position-absolute top-0 start-100 translate-middle pe-3 badge rounded-pill bg-dark 
+                        <?php echo ($order_counts['completed'] == 0) ? 'd-none' : ''; ?>">
+              <?php echo $order_counts['completed']; ?>
+            </span>
           </button>
         </a>
       </div>
@@ -103,9 +152,10 @@
         <a class="text-dark" href="cancelled-order.php">
           <button type="button" class="tracker-btn btn btn-sm position-relative p-0 px-2">
             <i class="bi bi-bag-x fs-1"></i><br>Cancelled
-            <span class="position-absolute top-0 start-100 translate-middle  ps- pe-3 badge rounded-pill bg-dark">
-              1
-              <span class="visually-hidden">unread messages</span>
+            <span class="position-absolute top-0 start-100 translate-middle pe-3 badge rounded-pill bg-dark 
+                        <?php echo ($order_counts['cancelled'] == 0) ? 'd-none' : ''; ?>">
+              <?php echo $order_counts['cancelled']; ?>
+            </span>
           </button>
         </a>
       </div>
@@ -114,19 +164,15 @@
         <a class="text-dark" href="refunded-order.php">
           <button type="button" class="tracker-btn btn btn-sm position-relative p-0 px-2">
             <i class="bi bi-box-arrow-in-left fs-1"></i><br>Returned
-            <span class="position-absolute top-0 start-100 translate-middle  ps- pe-3 badge rounded-pill bg-dark">
-              1
-              <span class="visually-hidden">unread messages</span>
+            <span class="position-absolute top-0 start-100 translate-middle pe-3 badge rounded-pill bg-dark 
+                        <?php echo ($order_counts['return/refund'] == 0) ? 'd-none' : ''; ?>">
+              <?php echo $order_counts['return/refund']; ?>
+            </span>
           </button>
         </a>
       </div>
       <!-- HISTORY -->
       <div class="col p-0">
-        <a class="text-dark text-center" href="history.php">
-          <button type="button" class="tracker-btn btn btn-sm position-relative p-0 px-2">
-            <i class="bi bi-clock-history fs-1"></i><br>View History
-          </button>
-        </a>
       </div>
     </div>
   </div> <!-- END CANCELLED -->

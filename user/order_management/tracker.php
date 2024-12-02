@@ -29,7 +29,7 @@ WHERE o.order_status = 'pending' AND o.users_id = :userId";
   $sql = "
 SELECT COUNT(*) AS count 
 FROM orders o
-WHERE o.order_status = 'completed' AND o.users_id = :userId";
+WHERE o.order_status = 'processing' AND o.users_id = :userId";
   $stmt = $pdo->prepare($sql);
   $stmt->execute(['userId' => $userId]);
   $toShipCount = $stmt->fetchColumn();
@@ -311,7 +311,7 @@ WHERE o.order_status = 'delivered' AND o.users_id = :userId";
         FROM orders o
         JOIN orders_item oi ON o.orders_id = oi.orders_id
         JOIN product p ON oi.product_id = p.product_id
-        WHERE o.order_status = 'completed' AND o.users_id = :userId"; // Removed LIMIT 1 to fetch all relevant completed orders
+        WHERE o.order_status = 'processing' AND o.users_id = :userId"; // Removed LIMIT 1 to fetch all relevant completed orders
 
         $stmt = $pdo->prepare($sql); // Corrected: Use prepare instead of query
         $stmt->execute(['userId' => $userId]); // Corrected: Execute with bound parameter

@@ -57,7 +57,8 @@ if (isset($_SESSION['id'])) {
             </button>
             <div class="w-100 position-relative">
               <ul class="dropdown-menu dropdown-menu-center mt-3" style="left: 50%; transform: translateX(-50%);">
-                <li><a class="dropdown-item text-dark" href="../../user/order_management/account-details.php">My Account</a></li>
+                <li><a class="dropdown-item text-dark" href="../../user/order_management/account-details.php">My
+                    Account</a></li>
                 <li><a class="dropdown-item text-dark" href="../../user/order_management/tracker.php">Orders</a></li>
                 <li>
                   <hr class="dropdown-divider">
@@ -77,7 +78,8 @@ if (isset($_SESSION['id'])) {
           </button>
           <div class="w-100 position-relative">
             <ul class="dropdown-menu dropdown-menu-center mt-2" style="left: 50%; transform: translateX(-50%);">
-              <li><a class="dropdown-item text-dark" href="../../user/order_management/account-details.php">My Account</a></li>
+              <li><a class="dropdown-item text-dark" href="../../user/order_management/account-details.php">My
+                  Account</a></li>
               <li><a class="dropdown-item text-dark" href="../../user/order_management/tracker.php">Orders</a></li>
               <li>
                 <hr class="dropdown-divider">
@@ -108,12 +110,19 @@ if (isset($_SESSION['id'])) {
 
     <div class="offcanvas-body position-relative">
       <ul class="list-unstyled">
-        <li><a href="../../user/user_auth/index.php" class="text-dark text-decoration-none letter-spacing-1">Home</a></li>
+        <li><a href="../../user/user_auth/index.php" class="text-dark text-decoration-none letter-spacing-1">Home</a>
+        </li>
         <li><a href="../../user/product_catalog/product_catalog.php" class="text-dark text-decoration-none letter-spacing-1">Products</a></li>
         <li><a href="../../user/order_management/review.php" class="text-dark text-decoration-none letter-spacing-1">Customer Reviews</a></li>
-        <li><a href="../../user/order_management/order.php" class="text-dark text-decoration-none letter-spacing-1">My Orders</a></li>
+
+        <?php if ($first_name !== "Guest") : ?>
+          <li><a href="../../user/order_management/order.php" class="text-dark text-decoration-none letter-spacing-1">My
+              Orders</a></li>
+        <?php endif; ?>
+
         <li><a href="../../user/user_auth/contact-us.php" class="text-dark text-decoration-none letter-spacing-1">Contact Us</a></li>
-        <li><a href="../../user/user_auth/about-us.php" class="text-dark text-decoration-none letter-spacing-1">About Us</a></li>
+        <li><a href="../../user/user_auth/about-us.php" class="text-dark text-decoration-none letter-spacing-1">About
+            Us</a></li>
       </ul>
     </div>
   </div>
@@ -129,18 +138,8 @@ if (isset($_SESSION['id'])) {
 
           fetch(this.href)
             .then(() => {
-              // Update UI after session destruction
-              const dropdownToggle = document.querySelector('.btn.dropdown-toggle');
-              if (dropdownToggle) {
-                dropdownToggle.textContent = 'Login';
-                dropdownToggle.classList.remove('dropdown-toggle');
-                dropdownToggle.setAttribute('href', '../../user/user_auth/loginpage.php');
-              }
-
-              // Update mobile and desktop login
-              if (loginButton) {
-                loginButton.style.display = 'block';
-              }
+              // After logout, redirect to index.php
+              window.location.href = '../../user/user_auth/index.php';
             })
             .catch(err => console.error('Logout error:', err));
         });
