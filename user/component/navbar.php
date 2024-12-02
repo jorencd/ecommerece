@@ -144,23 +144,14 @@ if (isset($_SESSION['id'])) {
 
           fetch(this.href)
             .then(() => {
-              // Update UI after session destruction
-              const dropdownToggle = document.querySelector('.btn.dropdown-toggle');
-              if (dropdownToggle) {
-                dropdownToggle.textContent = 'Login';
-                dropdownToggle.classList.remove('dropdown-toggle');
-                dropdownToggle.setAttribute('href', '../../user/user_auth/loginpage.php');
-              }
-
-              // Update mobile and desktop login
-              if (loginButton) {
-                loginButton.style.display = 'block';
-              }
+              // After logout, redirect to index.php
+              window.location.href = '../../user/user_auth/index.php';
             })
             .catch(err => console.error('Logout error:', err));
         });
       }
     });
+
   </script>
 
   <script src="../../assets/Bootstrap/js/bootstrap.bundle.js"></script>

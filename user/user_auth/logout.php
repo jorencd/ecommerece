@@ -1,13 +1,11 @@
 <?php
 session_start();
 
-// Unset all session variables
-$_SESSION = [];
-
-// Destroy the session
+// Destroy all session data
+session_unset();
 session_destroy();
 
-// Redirect to login page or home page
+// Redirect to index.php
 header("Location: ../../user/user_auth/index.php");
-exit;
+exit();
 ?>
