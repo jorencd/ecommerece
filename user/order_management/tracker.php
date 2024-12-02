@@ -1,6 +1,13 @@
 <?php
+session_start();
 include '../../database/dbconnect.php';
 
+if (!isset($_SESSION['id'])) {
+  echo "User is not logged in.";
+  exit();
+}
+
+$userId = $_SESSION['id'];
 // Initialize counts
 $toPayCount = 0;
 $toShipCount = 0;
@@ -9,35 +16,40 @@ $toRateCount = 0;
 
 try {
   // Query for "To Pay" orders (pending status)
+  // Query for "To Pay" orders (pending status)
   $sql = "
-        SELECT COUNT(*) AS count 
-        FROM orders o
-        WHERE o.order_status = 'pending' AND o.users_id = 11";
-  $stmt = $pdo->query($sql);
-  $toPayCount = $stmt->fetchColumn();
+SELECT COUNT(*) AS count 
+FROM orders o
+WHERE o.order_status = 'pending' AND o.users_id = :userId";
+  $stmt = $pdo->prepare($sql); // Use prepare
+  $stmt->execute(['userId' => $userId]); // Bind parameter
+  $toPayCount = $stmt->fetchColumn(); // Fetch result
 
   // Query for "To Ship" orders (completed status)
   $sql = "
-        SELECT COUNT(*) AS count 
-        FROM orders o
-        WHERE o.order_status = 'completed' AND o.users_id = 11";
-  $stmt = $pdo->query($sql);
+SELECT COUNT(*) AS count 
+FROM orders o
+WHERE o.order_status = 'completed' AND o.users_id = :userId";
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute(['userId' => $userId]);
   $toShipCount = $stmt->fetchColumn();
 
   // Query for "Shipped" orders
   $sql = "
-        SELECT COUNT(*) AS count 
-        FROM orders o
-        WHERE o.order_status = 'shipped' AND o.users_id = 12";
-  $stmt = $pdo->query($sql);
+SELECT COUNT(*) AS count 
+FROM orders o
+WHERE o.order_status = 'shipped' AND o.users_id = :userId";
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute(['userId' => $userId]);
   $shippedCount = $stmt->fetchColumn();
 
   // Query for "To Rate" orders (delivered status)
   $sql = "
-        SELECT COUNT(*) AS count 
-        FROM orders o
-        WHERE o.order_status = 'delivered' AND o.users_id = 11";
-  $stmt = $pdo->query($sql);
+SELECT COUNT(*) AS count 
+FROM orders o
+WHERE o.order_status = 'delivered' AND o.users_id = :userId";
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute(['userId' => $userId]);
   $toRateCount = $stmt->fetchColumn();
 } catch (PDOException $e) {
   echo "Connection failed: " . $e->getMessage();
@@ -235,18 +247,19 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $sql = "
-        SELECT 
-            p.name AS product_name,
-            p.color,
-            oi.quantity,
-            oi.unit_price,
-            o.order_status
-        FROM orders o
-        JOIN orders_item oi ON o.orders_id = oi.orders_id
-        JOIN product p ON oi.product_id = p.product_id
-        WHERE o.order_status = 'pending' AND o.users_id = 11"; // Removed LIMIT 1 to fetch all pending orders
+    SELECT 
+    p.name AS product_name,
+    p.color,
+    oi.quantity,
+    oi.unit_price,
+    o.order_status
+    FROM orders o
+    JOIN orders_item oi ON o.orders_id = oi.orders_id
+    JOIN product p ON oi.product_id = p.product_id
+    WHERE o.order_status = 'pending' AND o.users_id = :userId";
 
-    $stmt = $pdo->query($sql);
+    $stmt = $pdo->prepare($sql); // Use prepare
+    $stmt->execute(['userId' => $userId]); // Bind parameters
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Render all orders under 'To Pay' without checking for emptiness
@@ -298,14 +311,15 @@ try {
         FROM orders o
         JOIN orders_item oi ON o.orders_id = oi.orders_id
         JOIN product p ON oi.product_id = p.product_id
-        WHERE o.order_status = 'completed' AND o.users_id = 11"; // Removed LIMIT 1 to fetch all relevant completed orders
+        WHERE o.order_status = 'completed' AND o.users_id = :userId"; // Removed LIMIT 1 to fetch all relevant completed orders
 
-    $stmt = $pdo->query($sql);
-    $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $pdo->prepare($sql); // Corrected: Use prepare instead of query
+        $stmt->execute(['userId' => $userId]); // Corrected: Execute with bound parameter
+        $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Check if there are any completed orders
     if (empty($orders)) {
-      echo '<div class="container mt-3">Empty</div>';
+      
     } else {
       foreach ($orders as $order) {
         echo '<div id="to-ship" class="tab-content container mt-3">
@@ -353,10 +367,11 @@ try {
         FROM orders o
         JOIN orders_item oi ON o.orders_id = oi.orders_id
         JOIN product p ON oi.product_id = p.product_id
-        WHERE o.order_status = 'shipped' AND o.users_id = 12"; // Removed LIMIT 1 to fetch all relevant shipped orders
+        WHERE o.order_status = 'shipped' AND o.users_id = :userId"; // Removed LIMIT 1 to fetch all relevant shipped orders
 
-    $stmt = $pdo->query($sql);
-    $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $pdo->prepare($sql); // Corrected: Use prepare instead of query
+        $stmt->execute(['userId' => $userId]); // Corrected: Execute with bound parameter
+        $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Check if there are any shipped orders
     if (empty($orders)) {
@@ -405,10 +420,11 @@ try {
         FROM orders o
         JOIN orders_item oi ON o.orders_id = oi.orders_id
         JOIN product p ON oi.product_id = p.product_id
-        WHERE o.order_status = 'delivered' AND o.users_id = 11"; // Removed LIMIT 1 to fetch all relevant delivered orders
+        WHERE o.order_status = 'delivered' AND o.users_id = :userId"; // Removed LIMIT 1 to fetch all relevant delivered orders
 
-    $stmt = $pdo->query($sql);
-    $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $pdo->prepare($sql); // Corrected: Use prepare instead of query
+        $stmt->execute(['userId' => $userId]); // Corrected: Execute with bound parameter
+        $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Check if there are any delivered orders to rate
     if (empty($orders)) {
